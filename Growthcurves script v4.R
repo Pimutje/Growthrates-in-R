@@ -2,7 +2,9 @@ install.packages("growthrates")
 install.packages("ggplot2")
 install.packages("tidyr")
 install.packages("lubridate")
+install.packages("magick")
 
+library(magick)
 library(growthrates)
 library(ggplot2)
 library(tidyr)
@@ -54,7 +56,31 @@ for (i in colnames(RawData)[2:length(RawData)]) {
 #Saving all the plots
 plots.dir.path <- list.files(tempdir(), pattern="rs-graphics", full.names = TRUE); 
 plots.png.paths <- list.files(plots.dir.path, pattern=".png", full.names = TRUE)
-file.copy(from=plots.png.paths, to="C:\\Users\\Pimut\\OneDrive\\UvA\\Lab\\Results\\Spent medium growth\\rplots")
+file.copy(from=plots.png.paths, to="~/OneDrive/UvA/Lab/Results/Spent medium growth/Run 2/r plots/")
+
+
+plots.png.detials <- file.info(plots.png.paths)
+plots.png.detials <- plots.png.detials[order(plots.png.detials$mtime),]
+sorted.png.names <- gsub(plots.dir.path, "~/OneDrive/UvA/Lab/Results/Spent medium growth/Run 2/r plots/", row.names(plots.png.detials), fixed=TRUE)
+numbered.png.names <- paste0("~/OneDrive/UvA/Lab/Results/Spent medium growth/Run 2/r plots/", 1:length(sorted.png.names), ".png")
+
+# Rename all the .png files as: 1.png, 2.png, 3.png, and so on.
+file.rename(from=sorted.png.names, to=numbered.png.names)
+
+#Combining the plots in a larger image
+img_files <- fs::dir_ls(path = "~/OneDrive/UvA/Lab/Results/Spent medium growth/Run 2/r plots/", glob = "*.png")
+
+images_in <- function(img_file) {
+  tmp <- 
+    img_file %>%
+    image_read() %>%
+    image_scale("400")
+  tmp
+}
+
+out <- purrr::map(img_files, images_in)
+image_append(purrr::lift_dl(c)(out))
+
 
 #specific information per column
 fit <- fit_easylinear(t, RawData$X84)
