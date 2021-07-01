@@ -42,7 +42,7 @@ Growthrates <- sapply(RawData[,-1],fitfun)
 MinimalValuePerColumn <- apply(RawData,2,min)
 MaximalValuePerColumn <- apply(RawData,2,max)
 Results <- cbind(Growthrates, MinimalValuePerColumn, MaximalValuePerColumn)
-write.csv(Results,"C:\\Users\\Pimut\\OneDrive\\UvA\\Lab\\Results\\Spent medium growth\\growthrates.csv")
+write.csv2(Results,"~/OneDrive/UvA/Lab/Results/Spent medium growth/Run 2/growthrates.csv")
 
 #this function needs to loop for all data in the sheet (max 96 columns)
 for (i in colnames(RawData)[2:length(RawData)]) {
@@ -74,13 +74,11 @@ images_in <- function(img_file) {
   tmp <- 
     img_file %>%
     image_read() %>%
-    image_scale("400")
+    image_scale("500")
   tmp
 }
-
 out <- purrr::map(img_files, images_in)
-image_append(purrr::lift_dl(c)(out))
-
+image_append(purrr::lift_dl(c())(out))
 
 #specific information per column
 fit <- fit_easylinear(t, RawData$X84)
